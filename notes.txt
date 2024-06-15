@@ -1,0 +1,47 @@
+ 1. In Vue.js, components are typically wrapped in <template> tags. This is a fundamental aspect of Vue’s single-file Components (SFCs). In a Vue SFC, we generally have three sections: <template>, <script>, and <style>. The content within these tags contributes to the overall component object in Vue.
+    * <template>: Defines the HTML structure and layout of the component.
+    * <script>: Contains the JavaScript logic for the component.
+    * <style>: Defines the CSS styles for the component.
+
+2. In Vue.js, components are not functions like in React. Instead, they are objects. A component is defined as an object that includes options for the template, data, methods, computed properties, lifecycle hooks, and more.
+
+3. Vue Versus React-
+    Key Differences
+	•	Vue: Components are defined using an object-based syntax within the <script> tag of a single-file component.
+	•	React: Components can be either function components or class components.
+	•	State Management: Vue uses reactive data properties within the component object, while React uses useState for components.
+	•	Event Handling: Vue uses the @ directive for event handling (@click="method"), whereas React uses the onClick attribute (onClick={method}).
+
+4. Computed properties in Vue.js are used to define properties that are dependent on other properties. They are automatically updated when the dependent properties change.
+    - rows is defined within the computed object of the Vue component. This is the standard way to define a computed property in Vue.
+    - The computation of rows depends on this.posts, which is a reactive data property in the Vue component.
+    - Vue automatically tracks the dependency of rows on this.posts. If this.posts is updated (e.g., items are added, removed, or changed), Vue will automatically re-evaluate the rows computed property.
+    -Sample output of rows for 6 items in posts array- [[{1},{2}],[{3},{4}],[{5},{6}]] i.e. 3 subarrays each representing a row
+    - Intuition: For creating a table, we need <tr> and The number of rows depends upon the number of posts (which is a reactive property). Hence, make rows a computed property.
+
+5. export default { ... }
+    - When we use export default, we're specifying the default thing to be exported from the file. In Vue, this is commonly used to define a Vue component.
+    - The object inside the export default is the definition of our Vue component. This object can include various options like data, methods, computed, components, and lifecycle hooks. These options define the behavior and structure of the Vue component.
+    -components: This is an option in the Vue component definition object. It is used to register other components that are used within this component.
+
+6. Rows array would look like--> 
+            rows: [
+        [{ p1 }, { p2 }],
+        [{ p1 }, { p2 }],
+        [{ p1 }, { p2 }]
+        ]
+         Now to locate a post in the rows array we need row index and post index.
+
+7.  In-built methods for timers in JS: (setInterval & clearInterval)
+
+    -The setInterval function in JavaScript is used to repeatedly execute a specified function at fixed time intervals.
+
+    
+    
+    -clearInterval() is used to stop intervals (timers) set by setInterval. When we create an interval using setInterval, it returns a unique identifier (intervalId) that can be used later to stop that interval.
+
+8. beforeDestroy is a Vue.js lifecycle hook that is called right before a Vue instance or component is destroyed. It’s used to clean up resources or perform final actions.
+    -The purpose of this block of code is to ensure that any active intervals (created with setInterval) associated with image-type posts (type: 'image') are stopped and cleared before the component is destroyed.
+
+9. In Vue.js, hooks are special methods or functions provided by the Vue framework that allow you to execute code at specific stages of a component’s lifecycle. These lifecycle hooks provide opportunities to perform actions such as initialization, data fetching, DOM manipulation, and cleanup.
+    -The term “hooks” in the context of Vue and React refers to special functions that allow developers to “hook into” or interact with the lifecycle and state management of components
