@@ -3,8 +3,10 @@
   <NavbarComponent />
     <h1>My Feed</h1>
     <table class="tbl">
-      <tr v-for="(row, rowIndex) in rows" :key="rowIndex">    //each item in array rows represents a row
-        <td v-for="(post, postIndex) in row" :key="postIndex"> //we have a post item in each subarray row [{p1},{p2}]
+      <!-- //each item in array rows represents a row -->
+      <tr v-for="(row, rowIndex) in rows" :key="rowIndex">   
+        <!-- //we have a post item in each subarray row [{p1},{p2}] -->
+        <td v-for="(post, postIndex) in row" :key="postIndex">
           <div v-if="post.type === 'text'" class="textDiv">
             {{ post.content }}
           </div>
