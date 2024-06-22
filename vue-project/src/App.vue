@@ -29,12 +29,14 @@ export default {
 
 <template>
   <div id="app">
-    <MainPage />
+    <router-view></router-view>
+    
   </div>
 </template>
 
 <script>
 import MainPage from './components/MainPage.vue';
+// import ProfilePage from './components/ProfilePage.vue'
 
 export default {
   name: 'App',

@@ -23,7 +23,7 @@
             <a class="nav-link" href="#">Pricing</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">User Profile</a>
+            <router-link to="/profile" class="nav-link">User Profile</router-link>
           </li>
         </ul>
       </div>
