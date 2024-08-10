@@ -4,152 +4,139 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Property Search</title>
+    
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.js"></script>
+    
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            height: 100vh;
-            background-color: #f0f0f0;
-            overflow: hidden;
+        #sizeSlider {
+            margin-top: 30px;
         }
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 80%;
-            max-width: 600px;
-            margin-top: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-        }
-        .results {
-            margin-top: 20px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .property {
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-        }
-        .property img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-        }
-        .button-group {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        .button-group button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-        }
-        .button-group button:hover {
-            background-color: #0056b3;
+        #sizeValues {
+            text-align: center;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Property Search</h1>
-        <form id="searchForm">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Property Search</h1>
+        <form id="searchForm" class="mb-4">
             <div class="form-group">
                 <label for="zipcode">ZIP Code:</label>
-                <input type="text" id="zipcode" name="zipcode" required>
+                <input type="text" class="form-control" id="zipcode" name="zipcode" required>
             </div>
             <div class="form-group">
-                <label for="maxBudget">Max Budget:</label>
-                <input type="number" id="maxBudget" name="maxBudget" required>
+                <label for="maxBudget">Max Budget ($):</label>
+                <input type="number" class="form-control" id="maxBudget" name="maxBudget" required>
             </div>
-            <div class="button-group">
-                <button type="submit">Search</button>
-                <button type="button" id="resetButton" style="display: none;">Search Again</button>
+            <div class="form-group">
+                <label for="sizeRange">Size Range (Sqft):</label>
+                <div id="sizeSlider"></div>
+                <div id="sizeValues" class="mt-2"></div>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Search</button>
+                <button type="button" id="resetButton" class="btn btn-secondary" style="display: none;">Search Again</button>
             </div>
         </form>
         <div class="results" id="results"></div>
     </div>
 
     <script>
-        document.getElementById('searchForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const zipcode = document.getElementById('zipcode').value;
-            const maxBudget = document.getElementById('maxBudget').value;
+        document.addEventListener('DOMContentLoaded', function() {
+            var sizeSlider = document.getElementById('sizeSlider');
+            var sizeValues = document.getElementById('sizeValues');
 
-            console.log(`Searching for properties in ZIP code: ${zipcode} with max budget: $${maxBudget}`);
-
-            fetch('/search', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
+            noUiSlider.create(sizeSlider, {
+                start: [500, 5000],
+                connect: true,
+                range: {
+                    'min': 500,
+                    'max': 10000
                 },
-                body: JSON.stringify({ zipcode, max_budget: maxBudget })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const resultsDiv = document.getElementById('results');
-                resultsDiv.innerHTML = '';
-                if (data.error) {
-                    resultsDiv.innerHTML = `<p>Error: ${data.error}</p>`;
-                } else {
-                    if (data.length === 0) {
-                        resultsDiv.innerHTML = `<p>No properties found for ZIP code: ${zipcode}</p>`;
-                    } else {
-                        data.forEach((property, index) => {
-                            const propertyDiv = document.createElement('div');
-                            propertyDiv.classList.add('property');
-                            propertyDiv.innerHTML = `
-                                <h2>${index + 1}. ${property.name}</h2>
-                                <p>Price: $${property.price.toLocaleString()}</p>
-                                <p><a href="${property.url}" target="_blank">View Property</a></p>
-                                
-                            `;
-                            resultsDiv.appendChild(propertyDiv);
-                        });
+                step: 100,
+                format: {
+                    to: function (value) {
+                        return Math.round(value);
+                    },
+                    from: function (value) {
+                        return Number(value);
                     }
                 }
-                document.getElementById('resetButton').style.display = 'inline-block';
-                console.log('Results have been fetched and displayed.');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                const resultsDiv = document.getElementById('results');
-                resultsDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+            });
+
+            sizeSlider.noUiSlider.on('update', function (values, handle) {
+                sizeValues.innerHTML = 'Min: ' + values[0] + ' sqft, Max: ' + values[1] + ' sqft';
+            });
+
+            document.getElementById('searchForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const zipcode = document.getElementById('zipcode').value;
+                const maxBudget = document.getElementById('maxBudget').value;
+                const [minSize, maxSize] = sizeSlider.noUiSlider.get();
+
+                console.log(`ZIP code: ${zipcode}, Max Budget: ${maxBudget}, Min Size: ${minSize}, Max Size: ${maxSize}`);
+
+                fetch('/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ zipcode, max_budget: maxBudget, min_size: minSize, max_size: maxSize })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const resultsDiv = document.getElementById('results');
+                    resultsDiv.innerHTML = '';
+                    if (data.error) {
+                        resultsDiv.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                    } else {
+                        if (data.length === 0) {
+                            resultsDiv.innerHTML = `<div class="alert alert-info">No properties found for ZIP code: ${zipcode}</div>`;
+                        } else {
+                            data.forEach((property, index) => {
+                                const propertyDiv = document.createElement('div');
+                                propertyDiv.classList.add('card', 'mb-3');
+                                propertyDiv.innerHTML = `
+                                    <div class="card-body">
+                                        <h5 class="card-title">${index + 1}. ${property.name}</h5>
+                                        <p class="card-text">Price: $${property.price.toLocaleString()}</p>
+                                        <p class="card-text">Size: ${property.size ? property.size + ' Sqft.' : 'N/A'}</p>
+                                        <a href="${property.url}" target="_blank" class="btn btn-primary">View Property</a>
+                                    </div>
+                                `;
+                                resultsDiv.appendChild(propertyDiv);
+                            });
+                        }
+                    }
+                    document.getElementById('resetButton').style.display = 'inline-block';
+                    console.log('Results have been fetched and displayed.');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const resultsDiv = document.getElementById('results');
+                    resultsDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+                });
+            });
+
+            document.getElementById('resetButton').addEventListener('click', function() {
+                document.getElementById('searchForm').reset();
+                sizeSlider.noUiSlider.set([500, 5000]);
+                document.getElementById('results').innerHTML = '';
+                this.style.display = 'none';
             });
         });
-
-        document.getElementById('resetButton').addEventListener('click', function() {
-            document.getElementById('searchForm').reset();
-            document.getElementById('results').innerHTML = '';
-            this.style.display = 'none';
-        });
     </script>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
